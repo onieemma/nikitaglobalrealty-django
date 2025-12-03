@@ -1,0 +1,1 @@
+web: gunicorn nikitastite.wsgi --log-file -
