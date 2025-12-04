@@ -2,8 +2,6 @@ from pathlib import Path
 import os
 from decouple import config
 
-
-PORT = int(os.environ.get('PORT', 8000))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,7 +15,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']  # Update with your actual domain in production
+ALLOWED_HOSTS = ['*']  # Update with your actual domain later
 
 
 # Application definition
@@ -116,8 +114,9 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise configuration
+# WhiteNoise configuration - ADD THESE LINES
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -169,7 +168,7 @@ MESSAGE_TAGS = {
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Change to SMTP in production
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Change to SMTP later
 
 DEFAULT_FROM_EMAIL = 'noreply@nikitasite.com'
 ADMIN_EMAIL = 'admin@nikitasite.com'
