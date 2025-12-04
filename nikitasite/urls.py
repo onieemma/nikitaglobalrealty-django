@@ -5,12 +5,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('base.urls')),  # or your app
+    path('', include('base.urls')),
+]
 
-    
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+# Only serve static/media in development
+# WhiteNoise handles static files in production automatically
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.BASE_DIR / 'static')
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
