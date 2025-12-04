@@ -1,8 +1,7 @@
-
-
 from pathlib import Path
 import os
 from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,19 +10,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-temporary-key-for-dev-only')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['x']
+ALLOWED_HOSTS = ['*']  # Update with your actual domain in production
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'whitenoise.middleware.WhiteNoiseMiddleware'
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -36,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ADD THIS LINE
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -109,13 +108,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-
+# WhiteNoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -138,8 +138,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-
+CSRF_COOKIE_SECURE = not DEBUG  # True in production
 
 
 # REST framework (minimal)
@@ -150,9 +149,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ]
 }
-
-
-
 
 
 # Message framework
@@ -167,77 +163,18 @@ MESSAGE_TAGS = {
 }
 
 
-
-# # this is main production (Production):
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'mail.nikitaglobalrealty.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'info@nikitaglobalrealty.com'
-# EMAIL_HOST_PASSWORD = 'your-actual-password'  # Get from your hosting provider
-
 # Email Configuration
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'mail.nikitaglobalrealty.com'  # Your domain's mail server
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'info@nikitaglobalrealty.com'
-# EMAIL_HOST_PASSWORD = 'your-email-password-here'  # You need to add your actual password
-# DEFAULT_FROM_EMAIL = 'info@nikitaglobalrealty.com'
-# CONTACT_EMAIL = 'info@nikitaglobalrealty.com'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Change to SMTP in production
 
-# For testing locally, you can use console backend (prints to console instead of sending):
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Smart email configuration
-# if DEBUG:
-#     # Local development - console
-#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# else:
-#     # Production - real email
-#     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#     EMAIL_HOST = 'mail.nikitaglobalrealty.com'
-#     EMAIL_PORT = 587
-#     EMAIL_USE_TLS = True
-#     EMAIL_HOST_USER = 'info@nikitaglobalrealty.com'
-#     EMAIL_HOST_PASSWORD = 'your-actual-password-here'
-
-# # These work for both
-# DEFAULT_FROM_EMAIL = 'info@nikitaglobalrealty.com'
-# CONTACT_EMAIL = 'info@nikitaglobalrealty.com'
-
-
-# Add these to your nikitastite/settings.py
-
-# Email Configuration (choose one based on your preference)
-
-# Option 1: Gmail SMTP
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your-email@gmail.com'  # Your Gmail
-# EMAIL_HOST_PASSWORD = 'your-app-password'  # Gmail App Password (not regular password)
-# DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
-# ADMIN_EMAIL = 'admin@yourdomain.com'  # Where inquiries will be sent
-
-# Option 2: Console Backend (for testing - prints emails to console)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'noreply@nikitastite.com'
-ADMIN_EMAIL = 'admin@nikitastite.com'
-
-CONTACT_EMAIL = 'admin@nikitastite.com'     # Where admin receives messages
-APPOINTMENT_EMAIL = 'admin@nikitastite.com' # optional, for future
-INQUIRY_EMAIL = 'admin@nikitastite.com'     # optional
-
-
-
-# Add your domain in production
+DEFAULT_FROM_EMAIL = 'noreply@nikitasite.com'
+ADMIN_EMAIL = 'admin@nikitasite.com'
+CONTACT_EMAIL = 'admin@nikitasite.com'
+APPOINTMENT_EMAIL = 'admin@nikitasite.com'
+INQUIRY_EMAIL = 'admin@nikitasite.com'
 
 
 # Google Gemini API Key
-GEMINI_API_KEY =  config('GEMINI_API_KEY')
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
+GEMINI_API_KEY = config('GEMINI_API_KEY')
